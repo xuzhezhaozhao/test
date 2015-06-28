@@ -1,4 +1,5 @@
-EXECS = mpi_hello_world send_recv ping_pong ring check_status probe random_walk
+EXECS = mpi_hello_world send_recv ping_pong ring check_status probe random_walk \
+		avg all_avg reduce_avg reduce_stddev
 MPICC ?= mpicc
 MPICXX ?= mpicxx
 
@@ -27,6 +28,19 @@ test: all
 	@echo
 	@echo begin test random_walk 
 	mpirun -n $N -f host_file ./random_walk 100 200 4
+	@echo
+	@echo begin test avg
+	mpirun -n $N -f host_file ./avg 1000
+	@echo
+	@echo begin test all_avg
+	mpirun -n $N -f host_file ./all_avg 1000
+	@echo
+	@echo begin test reduce_avg
+	mpirun -n $N -f host_file ./reduce_avg 1000
+	@echo
+	@echo begin test reduce_stddev
+	mpirun -n $N -f host_file ./reduce_stddev 1000
+
 
 mpi_hello_world: mpi_hello_world.c
 	${MPICC} -o $@ mpi_hello_world.c
@@ -48,6 +62,19 @@ probe: probe.c
 	
 random_walk: random_walk.cpp
 	${MPICXX} -o $@ random_walk.cpp
+
+avg: avg.c
+	${MPICXX} -o $@ avg.c
+
+all_avg: all_avg.c
+	${MPICXX} -o $@ all_avg.c
+
+
+reduce_avg: reduce_avg.c
+	${MPICXX} -o $@ reduce_avg.c
+
+reduce_stddev: reduce_stddev.c
+	${MPICXX} -o $@ reduce_stddev.c
 
 clean:
 	rm ${EXECS}
